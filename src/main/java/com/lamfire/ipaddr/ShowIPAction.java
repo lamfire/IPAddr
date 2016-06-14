@@ -4,6 +4,7 @@ import com.lamfire.json.JSON;
 import com.lamfire.logger.Logger;
 import com.lamfire.qqwryparser.AddrInfo;
 import com.lamfire.qqwryparser.QQwryUtils;
+import com.lamfire.utils.StringUtils;
 import com.lamfire.warden.Action;
 import com.lamfire.warden.ActionContext;
 import com.lamfire.warden.anno.ACTION;
@@ -20,10 +21,19 @@ public class ShowIPAction implements Action {
     private static final Logger LOGGER = Logger.getLogger(ShowIPAction.class);
     @Override
     public void execute(ActionContext context) {
-        String remoteAddr = context.getRealRemoteAddr();
-        AddrInfo addr = QQwryUtils.getAddrInfo(remoteAddr);
+        String ipaddr = context.getHttpRequestParameters().getString("q");
+        if(StringUtils.isBlank(ipaddr)){
+            ipaddr = context.getHttpRequestParameters().getString("ip");
+        }else if(StringUtils.isBlank(ipaddr)){
+            ipaddr = context.getHttpRequestParameters().getString("addr");
+        }
+
+        if(StringUtils.isBlank(ipaddr)){
+            ipaddr = context.getRealRemoteAddr();
+        }
+        AddrInfo addr = QQwryUtils.getAddrInfo(ipaddr);
         String result = JSON.toJSONString(addr);
-        LOGGER.info(remoteAddr +" -> " + result);
+        LOGGER.info(ipaddr +" -> " + result);
         context.setResponseHeader("Content-Type","text/plain;charset=UTF-8");
         context.writeResponse(result,"utf-8");
 
