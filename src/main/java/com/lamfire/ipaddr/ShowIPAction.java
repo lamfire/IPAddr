@@ -31,11 +31,29 @@ public class ShowIPAction implements Action {
         if(StringUtils.isBlank(ipaddr)){
             ipaddr = context.getRealRemoteAddr();
         }
-        AddrInfo addr = QQwryUtils.getAddrInfo(ipaddr);
+
+        AddrInfo addr = getAddrInfo(ipaddr);
+
         String result = JSON.toJSONString(addr);
-        LOGGER.info(ipaddr +" -> " + result);
+        //LOGGER.info(ipaddr +" -> " + result);
         context.setResponseHeader("Content-Type","text/plain;charset=UTF-8");
         context.writeResponse(result,"utf-8");
+    }
 
+    private AddrInfo getAddrInfo(String ipaddr){
+        AddrInfo addr = null;
+
+        try {
+            addr = IPIP.getInstance().getAddrInfo(ipaddr);
+            LOGGER.info("IPIP[" + ipaddr +"] -> " + addr);
+        }catch (Exception e){
+            LOGGER.error("IPIP[" + ipaddr +"] -> " + e.getMessage(),e);
+        }
+
+        if(addr == null){
+            addr = QQwryUtils.getAddrInfo(ipaddr);
+            LOGGER.info("CZ88[" + ipaddr +"] -> " + addr);
+        }
+        return addr;
     }
 }
