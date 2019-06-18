@@ -97,6 +97,7 @@
                     <excludes>
                         <exclude>**/*.properties</exclude>
                         <exclude>**/*.dat</exclude>
+                        <exclude>**/*.ipdb</exclude>
                     </excludes>
                 </configuration>
             </plugin>
